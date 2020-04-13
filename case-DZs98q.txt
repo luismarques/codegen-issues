@@ -1,0 +1,93 @@
+rv64gc 3 57
+short a(char b, int c) {
+  for (int d = b; c;) {
+    for (long e = d ?: c; e ?: c; e = b)
+      --c;
+    b = c;
+  }
+  for (; b;)
+    ;
+  return b;
+}
+
+GCC rv64gc:
+	.file	"test.c"
+	.option nopic
+	.text
+	.align	1
+	.globl	a
+	.type	a, @function
+a:
+	li	a0,0
+	ret
+	.size	a, .-a
+	.ident	"GCC: (crosstool-NG 1.24.0.37-3f461da) 10.0.0 20200108 (experimental)"
+	.section	.note.GNU-stack,"",@progbits
+
+Clang rv64gc:
+	.text
+	.attribute	4, 16
+	.attribute	5, "rv64i2p0_m2p0_a2p0_f2p0_d2p0_c2p0"
+	.file	"test.c"
+	.globl	a                       # -- Begin function a
+	.p2align	1
+	.type	a,@function
+a:                                      # @a
+.La$local:
+# %bb.0:
+	beqz	a1, .LBB0_12
+# %bb.1:
+	add	a2, zero, a0
+	j	.LBB0_3
+.LBB0_2:                                #   in Loop: Header=BB0_3 Depth=1
+	slli	a2, a1, 32
+	srli	a3, a2, 32
+	add	a2, zero, a1
+	beqz	a3, .LBB0_13
+.LBB0_3:                                # =>This Loop Header: Depth=1
+                                        #     Child Loop BB0_10 Depth 2
+	add	a3, zero, a1
+	beqz	a0, .LBB0_5
+# %bb.4:                                #   in Loop: Header=BB0_3 Depth=1
+	add	a3, zero, a0
+.LBB0_5:                                #   in Loop: Header=BB0_3 Depth=1
+	sext.w	a1, a1
+	slli	a4, a3, 32
+	srli	a5, a4, 32
+	add	a4, zero, a1
+	beqz	a5, .LBB0_7
+# %bb.6:                                #   in Loop: Header=BB0_3 Depth=1
+	sext.w	a4, a3
+.LBB0_7:                                #   in Loop: Header=BB0_3 Depth=1
+	beqz	a4, .LBB0_2
+# %bb.8:                                #   in Loop: Header=BB0_3 Depth=1
+	andi	a3, a2, 255
+	j	.LBB0_10
+.LBB0_9:                                #   in Loop: Header=BB0_10 Depth=2
+	beqz	a4, .LBB0_2
+.LBB0_10:                               #   Parent Loop BB0_3 Depth=1
+                                        # =>  This Inner Loop Header: Depth=2
+	andi	a5, a2, 255
+	addi	a1, a1, -1
+	add	a4, zero, a1
+	beqz	a5, .LBB0_9
+# %bb.11:                               #   in Loop: Header=BB0_10 Depth=2
+	add	a4, zero, a3
+	j	.LBB0_9
+.LBB0_12:
+	add	a1, zero, a0
+.LBB0_13:
+	andi	a0, a1, 255
+	beqz	a0, .LBB0_15
+.LBB0_14:                               # =>This Inner Loop Header: Depth=1
+	j	.LBB0_14
+.LBB0_15:
+	mv	a0, zero
+	ret
+.Lfunc_end0:
+	.size	a, .Lfunc_end0-a
+                                        # -- End function
+	.ident	"clang version 11.0.0 "
+	.section	".note.GNU-stack","",@progbits
+	.addrsig
+

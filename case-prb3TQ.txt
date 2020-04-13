@@ -1,0 +1,47 @@
+rv32gc 5 7
+int a(short b, short c) {
+  int d = !1740;
+  short e = b ? d : c;
+  return e;
+}
+
+GCC rv32gc:
+	.file	"test.c"
+	.option nopic
+	.text
+	.align	1
+	.globl	a
+	.type	a, @function
+a:
+	seqz	a5,a0
+	neg	a5,a5
+	and	a0,a1,a5
+	ret
+	.size	a, .-a
+	.ident	"GCC: (crosstool-NG 1.24.0.37-3f461da) 9.2.0"
+	.section	.note.GNU-stack,"",@progbits
+
+Clang rv32gc:
+	.text
+	.attribute	4, 16
+	.attribute	5, "rv32i2p0_m2p0_a2p0_f2p0_d2p0_c2p0"
+	.file	"test.c"
+	.globl	a                       # -- Begin function a
+	.p2align	1
+	.type	a,@function
+a:                                      # @a
+.La$local:
+# %bb.0:
+	beqz	a0, .LBB0_2
+# %bb.1:
+	mv	a1, zero
+.LBB0_2:
+	add	a0, zero, a1
+	ret
+.Lfunc_end0:
+	.size	a, .Lfunc_end0-a
+                                        # -- End function
+	.ident	"clang version 11.0.0 "
+	.section	".note.GNU-stack","",@progbits
+	.addrsig
+

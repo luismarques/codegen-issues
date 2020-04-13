@@ -1,0 +1,47 @@
+rv64gc 3 9
+int a(long b) {
+  char c = (long)a & b, d = b ?: c;
+  return d;
+}
+
+GCC rv64gc:
+	.file	"test.c"
+	.option nopic
+	.text
+	.align	1
+	.globl	a
+	.type	a, @function
+a:
+	andi	a0,a0,0xff
+	ret
+	.size	a, .-a
+	.ident	"GCC: (crosstool-NG 1.24.0.37-3f461da) 10.0.0 20200108 (experimental)"
+	.section	.note.GNU-stack,"",@progbits
+
+Clang rv64gc:
+	.text
+	.attribute	4, 16
+	.attribute	5, "rv64i2p0_m2p0_a2p0_f2p0_d2p0_c2p0"
+	.file	"test.c"
+	.globl	a                       # -- Begin function a
+	.p2align	1
+	.type	a,@function
+a:                                      # @a
+.La$local:
+# %bb.0:
+	bnez	a0, .LBB0_2
+# %bb.1:
+	lui	a1, %hi(a)
+	addi	a1, a1, %lo(a)
+	and	a0, a0, a1
+.LBB0_2:
+	andi	a0, a0, 255
+	ret
+.Lfunc_end0:
+	.size	a, .Lfunc_end0-a
+                                        # -- End function
+	.ident	"clang version 11.0.0 "
+	.section	".note.GNU-stack","",@progbits
+	.addrsig
+	.addrsig_sym a
+

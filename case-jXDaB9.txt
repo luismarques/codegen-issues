@@ -1,0 +1,57 @@
+rv32gc 3 20
+int a(short b) {
+  char c = b, e = -b;
+  short d = !c;
+  int f = e ? d : e;
+  char g = f ?: 7;
+  return g;
+}
+
+GCC rv32gc:
+	.file	"test.c"
+	.option nopic
+	.text
+	.align	1
+	.globl	a
+	.type	a, @function
+a:
+	li	a0,7
+	ret
+	.size	a, .-a
+	.ident	"GCC: (crosstool-NG 1.24.0.37-3f461da) 9.2.0"
+	.section	.note.GNU-stack,"",@progbits
+
+Clang rv32gc:
+	.text
+	.attribute	4, 16
+	.attribute	5, "rv32i2p0_m2p0_a2p0_f2p0_d2p0_c2p0"
+	.file	"test.c"
+	.globl	a                       # -- Begin function a
+	.p2align	1
+	.type	a,@function
+a:                                      # @a
+.La$local:
+# %bb.0:
+	neg	a1, a0
+	andi	a1, a1, 255
+	bnez	a1, .LBB0_3
+# %bb.1:
+	addi	a0, zero, 7
+	bnez	a1, .LBB0_4
+.LBB0_2:
+	ret
+.LBB0_3:
+	andi	a0, a0, 255
+	seqz	a1, a0
+	addi	a0, zero, 7
+	beqz	a1, .LBB0_2
+.LBB0_4:
+	add	a0, zero, a1
+	ret
+.Lfunc_end0:
+	.size	a, .Lfunc_end0-a
+                                        # -- End function
+	.ident	"clang version 11.0.0 "
+	.section	".note.GNU-stack","",@progbits
+	.addrsig
+

@@ -1,0 +1,59 @@
+rv64gc 11 19
+int a(int b, int c) {
+  int d = c >> b, e = d && b, f = ++e;
+  return f;
+}
+
+GCC rv64gc:
+	.file	"test.c"
+	.option nopic
+	.text
+	.align	1
+	.globl	a
+	.type	a, @function
+a:
+	sraw	a1,a1,a0
+	beq	a1,zero,.L3
+	snez	a0,a0
+	addi	a0,a0,1
+	ret
+.L3:
+	li	a0,1
+	ret
+	.size	a, .-a
+	.ident	"GCC: (crosstool-NG 1.24.0.37-3f461da) 10.0.0 20200108 (experimental)"
+	.section	.note.GNU-stack,"",@progbits
+
+Clang rv64gc:
+	.text
+	.attribute	4, 16
+	.attribute	5, "rv64i2p0_m2p0_a2p0_f2p0_d2p0_c2p0"
+	.file	"test.c"
+	.globl	a                       # -- Begin function a
+	.p2align	1
+	.type	a,@function
+a:                                      # @a
+.La$local:
+# %bb.0:
+	sraw	a2, a1, a0
+	addi	a1, zero, 2
+	beqz	a2, .LBB0_3
+# %bb.1:
+	beqz	a0, .LBB0_4
+.LBB0_2:
+	add	a0, zero, a1
+	ret
+.LBB0_3:
+	addi	a1, zero, 1
+	bnez	a0, .LBB0_2
+.LBB0_4:
+	addi	a1, zero, 1
+	add	a0, zero, a1
+	ret
+.Lfunc_end0:
+	.size	a, .Lfunc_end0-a
+                                        # -- End function
+	.ident	"clang version 11.0.0 "
+	.section	".note.GNU-stack","",@progbits
+	.addrsig
+

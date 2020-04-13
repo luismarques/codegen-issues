@@ -1,0 +1,56 @@
+rv32gc 5 14
+float a(int b, long c) {
+  short d = c != b;
+  return d;
+}
+
+GCC rv32gc:
+	.file	"test.c"
+	.option nopic
+	.text
+	.align	1
+	.globl	a
+	.type	a, @function
+a:
+	sub	a1,a1,a0
+	snez	a1,a1
+	fcvt.s.w	fa0,a1
+	ret
+	.size	a, .-a
+	.ident	"GCC: (crosstool-NG 1.24.0.37-3f461da) 9.2.0"
+	.section	.note.GNU-stack,"",@progbits
+
+Clang rv32gc:
+	.text
+	.attribute	4, 16
+	.attribute	5, "rv32i2p0_m2p0_a2p0_f2p0_d2p0_c2p0"
+	.file	"test.c"
+	.section	.sdata,"aw",@progbits
+	.p2align	2               # -- Begin function a
+.LCPI0_0:
+	.word	0x3f800000              # float 1
+	.text
+	.globl	a
+	.p2align	1
+	.type	a,@function
+a:                                      # @a
+.La$local:
+# %bb.0:
+	xor	a0, a0, a1
+	snez	a0, a0
+	bnez	a0, .LBB0_2
+# %bb.1:
+	fmv.w.x	fa0, zero
+	ret
+.LBB0_2:
+	lui	a0, %hi(.LCPI0_0)
+	addi	a0, a0, %lo(.LCPI0_0)
+	flw	fa0, 0(a0)
+	ret
+.Lfunc_end0:
+	.size	a, .Lfunc_end0-a
+                                        # -- End function
+	.ident	"clang version 11.0.0 "
+	.section	".note.GNU-stack","",@progbits
+	.addrsig
+

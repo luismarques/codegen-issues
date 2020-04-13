@@ -1,0 +1,63 @@
+rv32gc 5 6
+int a;
+float b() {
+  double c = a == a;
+  return c;
+}
+
+GCC rv32gc:
+	.file	"test.c"
+	.option nopic
+	.text
+	.align	1
+	.globl	b
+	.type	b, @function
+b:
+	lui	a5,%hi(.LC0)
+	flw	fa0,%lo(.LC0)(a5)
+	ret
+	.size	b, .-b
+	.comm	a,4,4
+	.section	.srodata.cst4,"aM",@progbits,4
+	.align	2
+.LC0:
+	.word	1065353216
+	.ident	"GCC: (crosstool-NG 1.24.0.37-3f461da) 9.2.0"
+	.section	.note.GNU-stack,"",@progbits
+
+Clang rv32gc:
+	.text
+	.attribute	4, 16
+	.attribute	5, "rv32i2p0_m2p0_a2p0_f2p0_d2p0_c2p0"
+	.file	"test.c"
+	.section	.sdata,"aw",@progbits
+	.p2align	2               # -- Begin function b
+.LCPI0_0:
+	.word	0x3f800000              # float 1
+	.text
+	.globl	b
+	.p2align	1
+	.type	b,@function
+b:                                      # @b
+.Lb$local:
+# %bb.0:
+	lui	a0, %hi(.LCPI0_0)
+	addi	a0, a0, %lo(.LCPI0_0)
+	flw	fa0, 0(a0)
+	ret
+.Lfunc_end0:
+	.size	b, .Lfunc_end0-b
+                                        # -- End function
+	.type	a,@object               # @a
+	.section	.sbss,"aw",@nobits
+	.globl	a
+	.p2align	2
+a:
+.La$local:
+	.word	0                       # 0x0
+	.size	a, 4
+
+	.ident	"clang version 11.0.0 "
+	.section	".note.GNU-stack","",@progbits
+	.addrsig
+

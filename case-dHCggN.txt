@@ -1,0 +1,51 @@
+rv64gc 7 10
+int a(int b) {
+  long c = 0;
+  c = b > c;
+  int d = c - 9032018;
+  return d;
+}
+
+GCC rv64gc:
+	.file	"test.c"
+	.option nopic
+	.text
+	.align	1
+	.globl	a
+	.type	a, @function
+a:
+	li	a5,-9031680
+	addiw	a5,a5,-338
+	sgt	a0,a0,zero
+	addw	a0,a0,a5
+	ret
+	.size	a, .-a
+	.ident	"GCC: (crosstool-NG 1.24.0.37-3f461da) 10.0.0 20200108 (experimental)"
+	.section	.note.GNU-stack,"",@progbits
+
+Clang rv64gc:
+	.text
+	.attribute	4, 16
+	.attribute	5, "rv64i2p0_m2p0_a2p0_f2p0_d2p0_c2p0"
+	.file	"test.c"
+	.globl	a                       # -- Begin function a
+	.p2align	1
+	.type	a,@function
+a:                                      # @a
+.La$local:
+# %bb.0:
+	lui	a1, 1046371
+	bgtz	a0, .LBB0_2
+# %bb.1:
+	addiw	a0, a1, -338
+	ret
+.LBB0_2:
+	addiw	a0, a1, -337
+	ret
+.Lfunc_end0:
+	.size	a, .Lfunc_end0-a
+                                        # -- End function
+	.ident	"clang version 11.0.0 "
+	.section	".note.GNU-stack","",@progbits
+	.addrsig
+
